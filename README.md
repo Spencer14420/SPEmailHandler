@@ -59,7 +59,7 @@ Alert for Displaying Errors
 <div id="message-alert" style="display: none;"></div>
 ```
 
-Alert for Displaying Errors
+Success Modal
 ```html
 <div class="modal fade" id="success" tabindex="-1" aria-labelledby="successLabel" aria-hidden="true">
     Success Message
