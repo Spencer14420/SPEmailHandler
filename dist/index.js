@@ -20,6 +20,9 @@ export class ContactForm {
     document.querySelector("#sendmessage")?.addEventListener("click", () => this.handleSubmit());
   }
   isEmail(email) {
+    if (email.length > 254) {
+      return false;
+    }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
   }
