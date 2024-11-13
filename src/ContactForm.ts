@@ -30,6 +30,9 @@ export class ContactForm {
   }
 
   isEmail(email: string): boolean {
+    if (email.length > 254) {
+      return false;
+    }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
   }
