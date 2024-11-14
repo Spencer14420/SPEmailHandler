@@ -113,10 +113,16 @@ export class ContactForm {
     ) as HTMLInputElement | null;
     const name = nameElement?.value || "";
 
+    const turnstileInput = document.getElementsByName(
+      "cf-turnstile-response",
+    )[0] as HTMLInputElement | null;
+    const turnstileToken = turnstileInput?.value || "";
+
     const data = {
       name,
       email,
       message,
+      turnstileToken,
     };
 
     this.sendMessage(data);

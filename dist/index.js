@@ -87,10 +87,15 @@ export class ContactForm {
       "#name"
     );
     const name = nameElement?.value || "";
+    const turnstileInput = document.getElementsByName(
+      "cf-turnstile-response"
+    )[0];
+    const turnstileToken = turnstileInput?.value || "";
     const data = {
       name,
       email,
-      message
+      message,
+      turnstileToken
     };
     this.sendMessage(data);
   }
