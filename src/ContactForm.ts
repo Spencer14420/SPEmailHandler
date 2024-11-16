@@ -3,11 +3,13 @@ import { Modal } from "bootstrap";
 
 export class ContactForm {
   serverScript: string;
+  tokenInputName: string | null;
   successModal: Modal | null = null;
   messageAlert: HTMLElement | null;
 
-  constructor(serverScript: string) {
+  constructor(serverScript: string, tokenInputName: string | null = null) {
     this.serverScript = serverScript;
+    this.tokenInputName = tokenInputName;
 
     const modalElement = document.querySelector(
       "#success",
@@ -118,11 +120,19 @@ export class ContactForm {
     )[0] as HTMLInputElement | null;
     const turnstileToken = turnstileInput?.value || "";
 
+    const tokenInput = this.tokenInputName
+      ? (document.getElementsByName(
+          this.tokenInputName,
+        )[0] as HTMLInputElement | null)
+      : null;
+    const tokenInputToken = tokenInput?.value || "";
+
     const data = {
       name,
       email,
       message,
       turnstileToken,
+      tokenInputToken,
     };
 
     this.sendMessage(data);

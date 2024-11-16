@@ -2,9 +2,10 @@
 import "bootstrap";
 import { Modal } from "bootstrap";
 export class ContactForm {
-  constructor(serverScript) {
+  constructor(serverScript, tokenInputName = null) {
     this.successModal = null;
     this.serverScript = serverScript;
+    this.tokenInputName = tokenInputName;
     const modalElement = document.querySelector(
       "#success"
     );
@@ -91,11 +92,16 @@ export class ContactForm {
       "cf-turnstile-response"
     )[0];
     const turnstileToken = turnstileInput?.value || "";
+    const tokenInput = this.tokenInputName ? document.getElementsByName(
+      this.tokenInputName
+    )[0] : null;
+    const tokenInputToken = tokenInput?.value || "";
     const data = {
       name,
       email,
       message,
-      turnstileToken
+      turnstileToken,
+      tokenInputToken
     };
     this.sendMessage(data);
   }
