@@ -2,66 +2,18 @@
 import "bootstrap";
 import { Modal } from "bootstrap";
 export class ContactForm {
-  constructor(serverScript, tokenInputName = null) {
-    this.successModal = null;
+  constructor(serverScript, tokenInputName = null, onSuccess = null) {
     this.serverScript = serverScript;
     this.tokenInputName = tokenInputName;
+    this.onSuccess = onSuccess;
     const modalElement = document.querySelector(
       "#success"
     );
-    if (modalElement) {
-      this.successModal = new Modal(modalElement);
-    }
+    this.successModal = modalElement ? new Modal(modalElement) : null;
     this.messageAlert = document.querySelector(
       "#message-alert"
     );
     this.initializeEventListeners();
-  }
-  initializeEventListeners() {
-    document.querySelector("#sendmessage")?.addEventListener("click", () => this.handleSubmit());
-  }
-  isEmail(email) {
-    if (email.length > 254) {
-      return false;
-    }
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
-  }
-  messageSuccess() {
-    ["#name", "#email", "#message"].forEach((selector) => {
-      const element = document.querySelector(
-        selector
-      );
-      if (element) {
-        element.value = "";
-      }
-    });
-    document.querySelector("#contactCancel")?.click();
-    if (this.successModal) {
-      this.successModal.show();
-    }
-  }
-  async sendMessage(data) {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => formData.append(key, value));
-    try {
-      const response = await fetch(this.serverScript, {
-        method: "POST",
-        body: formData
-      });
-      const responseData = await response.json();
-      const errorMessage = responseData.message || "An error occurred. Please try again later.";
-      if (!response.ok || responseData.status !== "success") {
-        this.displayAlert(errorMessage);
-        return;
-      }
-      this.messageSuccess();
-    } catch (error) {
-      console.error("Error sending message", error);
-      this.displayAlert(
-        "An unexpected error occurred. Please try again later."
-      );
-    }
   }
   handleSubmit() {
     const emailElement = document.querySelector(
@@ -111,6 +63,58 @@ export class ContactForm {
       this.messageAlert.style.display = "block";
     } else {
       console.error("Message alert element not found.");
+    }
+  }
+  initializeEventListeners() {
+    document.querySelector("#sendmessage")?.addEventListener("click", () => this.handleSubmit());
+  }
+  isEmail(email) {
+    if (email.length > 254) {
+      return false;
+    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+  messageSuccess(responseData) {
+    ["#name", "#email", "#message"].forEach((selector) => {
+      const element = document.querySelector(
+        selector
+      );
+      if (element) {
+        element.value = "";
+      }
+    });
+    const cancelButton = document.querySelector(
+      "#contactCancel"
+    );
+    cancelButton?.click();
+    if (this.successModal) {
+      this.successModal.show();
+    }
+    if (this.onSuccess) {
+      this.onSuccess(responseData || {});
+    }
+  }
+  async sendMessage(data) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+    try {
+      const response = await fetch(this.serverScript, {
+        method: "POST",
+        body: formData
+      });
+      const responseData = await response.json();
+      const errorMessage = responseData.message || "An error occurred. Please try again later.";
+      if (!response.ok || responseData.status !== "success") {
+        this.displayAlert(errorMessage);
+        return;
+      }
+      this.messageSuccess(responseData);
+    } catch (error) {
+      console.error("Error sending message", error);
+      this.displayAlert(
+        "An unexpected error occurred. Please try again later."
+      );
     }
   }
 }
