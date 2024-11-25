@@ -1,15 +1,11 @@
 "use strict";
-import "bootstrap";
-import { Modal } from "bootstrap";
+import { Modal } from "sp14420-modal";
 export class ContactForm {
   constructor(serverScript, tokenInputName = null, onSuccess = null) {
     this.serverScript = serverScript;
     this.tokenInputName = tokenInputName;
     this.onSuccess = onSuccess;
-    const modalElement = document.querySelector(
-      "#success"
-    );
-    this.successModal = modalElement ? new Modal(modalElement) : null;
+    this.successModal = new Modal("#success");
     this.messageAlert = document.querySelector(
       "#message-alert"
     );

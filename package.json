@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/Spencer14420/SPEmailHandler#readme",
   "dependencies": {
-    "bootstrap": "^5.3.3"
+    "sp14420-modal": "^1.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
