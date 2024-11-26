@@ -1,6 +1,6 @@
 # SPEmailHandler - Contact Form Script
 
-SPEmailHandler is a simple contact form handler that uses Bootstrap's modal for success feedback and manages form validation and submissions via JavaScript.
+SPEmailHandler is a simple client-side contact form handler. It manages form validation, form submissions, and user feedback for server response errors via JavaScript.
 
 ## Installation
 
