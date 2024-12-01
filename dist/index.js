@@ -9,6 +9,13 @@ export class ContactForm {
     this.messageAlert = document.querySelector(
       "#message-alert"
     );
+    this.sendButton = document.querySelector(
+      "#sendmessage"
+    );
+    this.loadingElement = document.querySelector(
+      "#sendmessage-loading"
+    );
+    this.isSending = false;
     this.initializeEventListeners();
   }
   handleSubmit() {
@@ -91,7 +98,18 @@ export class ContactForm {
       this.onSuccess(responseData || {});
     }
   }
+  setSending(isSending) {
+    this.isSending = isSending;
+    if (this.sendButton && this.loadingElement) {
+      this.sendButton.style.display = isSending ? "none" : "block";
+      this.loadingElement.style.display = isSending ? "block" : "none";
+    }
+  }
   async sendMessage(data) {
+    if (this.isSending) {
+      return;
+    }
+    this.setSending(true);
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => formData.append(key, value));
     try {
@@ -111,6 +129,8 @@ export class ContactForm {
       this.displayAlert(
         "An unexpected error occurred. Please try again later."
       );
+    } finally {
+      this.setSending(false);
     }
   }
 }

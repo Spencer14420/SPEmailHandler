@@ -5,7 +5,10 @@ export class ContactForm {
   public tokenInputName: string | null;
   public successModal: Modal | null;
   public messageAlert: HTMLElement | null;
+  public sendButton: HTMLElement | null;
+  public loadingElement: HTMLElement | null;
   public onSuccess: ((responseData: Record<string, any>) => void) | null;
+  private isSending: boolean;
 
   constructor(
     serverScript: string,
@@ -21,6 +24,16 @@ export class ContactForm {
     this.messageAlert = document.querySelector(
       "#message-alert",
     ) as HTMLElement | null;
+
+    this.sendButton = document.querySelector(
+      "#sendmessage",
+    ) as HTMLElement | null;
+
+    this.loadingElement = document.querySelector(
+      "#sendmessage-loading",
+    ) as HTMLElement | null;
+
+    this.isSending = false;
 
     this.initializeEventListeners();
   }
@@ -126,7 +139,20 @@ export class ContactForm {
     }
   }
 
+  private setSending(isSending: boolean): void {
+    this.isSending = isSending;
+    if (this.sendButton && this.loadingElement) {
+      this.sendButton.style.display = isSending ? "none" : "block";
+      this.loadingElement.style.display = isSending ? "block" : "none";
+    }
+  }
+
   private async sendMessage(data: Record<string, string>): Promise<void> {
+    if (this.isSending) {
+      return;
+    }
+
+    this.setSending(true);
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => formData.append(key, value));
 
@@ -151,6 +177,8 @@ export class ContactForm {
       this.displayAlert(
         "An unexpected error occurred. Please try again later.",
       );
+    } finally {
+      this.setSending(false);
     }
   }
 }
