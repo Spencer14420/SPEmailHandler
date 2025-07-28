@@ -1,5 +1,19 @@
 import { Modal } from "sp14420-modal";
 
+export interface ContactFormData {
+  name: string;
+  email: string;
+  message: string;
+  turnstileToken: string;
+  tokenInputToken: string;
+}
+
+export interface ResponseData {
+  status: string;
+  message?: string;
+  [key: string]: any;
+}
+
 export class ContactForm {
   public serverScript: string;
   public tokenInputName: string | null;
@@ -7,13 +21,13 @@ export class ContactForm {
   public messageAlert: HTMLElement | null;
   public sendButton: HTMLElement | null;
   public loadingElement: HTMLElement | null;
-  public onSuccess: ((responseData: Record<string, any>) => void) | null;
+  public onSuccess: ((responseData: ResponseData) => void) | null;
   private isSending: boolean;
 
   constructor(
     serverScript: string,
     tokenInputName: string | null = null,
-    onSuccess: ((responseData: Record<string, any>) => void) | null = null,
+    onSuccess: ((responseData: ResponseData) => void) | null = null,
   ) {
     this.serverScript = serverScript;
     this.tokenInputName = tokenInputName;
@@ -54,13 +68,9 @@ export class ContactForm {
     const email = emailElement.value;
     const message = messageElement.value;
 
-    if (!email || !this.isEmail(email)) {
-      this.displayAlert("Please enter a valid email address");
-      return;
-    }
-
-    if (!message) {
-      this.displayAlert("Please enter a message");
+    const validationError = this.validateInput(email, message);
+    if (validationError) {
+      this.displayAlert(validationError);
       return;
     }
 
@@ -81,7 +91,7 @@ export class ContactForm {
       : null;
     const tokenInputToken = tokenInput?.value || "";
 
-    const data = {
+    const data: ContactFormData = {
       name,
       email,
       message,
@@ -115,7 +125,19 @@ export class ContactForm {
     return emailPattern.test(email);
   }
 
-  private messageSuccess(responseData?: Record<string, any>): void {
+  private validateInput(email: string, message: string): string | null {
+    if (!email || !this.isEmail(email)) {
+      return "Please enter a valid email address";
+    }
+
+    if (!message) {
+      return "Please enter a message";
+    }
+
+    return null;
+  }
+
+  private messageSuccess(responseData?: ResponseData): void {
     ["#name", "#email", "#message"].forEach((selector) => {
       const element = document.querySelector(
         selector,
@@ -135,7 +157,7 @@ export class ContactForm {
     }
 
     if (this.onSuccess) {
-      this.onSuccess(responseData || {});
+      this.onSuccess(responseData || ({} as ResponseData));
     }
   }
 
@@ -147,7 +169,7 @@ export class ContactForm {
     }
   }
 
-  private async sendMessage(data: Record<string, string>): Promise<void> {
+  private async sendMessage(data: ContactFormData): Promise<void> {
     if (this.isSending) {
       return;
     }
