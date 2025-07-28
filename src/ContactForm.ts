@@ -68,13 +68,9 @@ export class ContactForm {
     const email = emailElement.value;
     const message = messageElement.value;
 
-    if (!email || !this.isEmail(email)) {
-      this.displayAlert("Please enter a valid email address");
-      return;
-    }
-
-    if (!message) {
-      this.displayAlert("Please enter a message");
+    const validationError = this.validateInput(email, message);
+    if (validationError) {
+      this.displayAlert(validationError);
       return;
     }
 
@@ -127,6 +123,18 @@ export class ContactForm {
     }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
+  }
+
+  private validateInput(email: string, message: string): string | null {
+    if (!email || !this.isEmail(email)) {
+      return "Please enter a valid email address";
+    }
+
+    if (!message) {
+      return "Please enter a message";
+    }
+
+    return null;
   }
 
   private messageSuccess(responseData?: ResponseData): void {
