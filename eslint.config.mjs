@@ -4,6 +4,7 @@ import tseslint from "typescript-eslint";
 import prettierPlugin from "eslint-plugin-prettier";
 import prettierConfig from "eslint-config-prettier";
 import { defineConfig } from "eslint/config";
+import jest from "eslint-plugin-jest";
 
 export default defineConfig([
   {
@@ -22,6 +23,22 @@ export default defineConfig([
   },
 
   tseslint.configs.recommended,
+
+  {
+    files: ["**/*.{test,spec}.{js,ts,mjs,cts,mts}"],
+    plugins: {
+      jest,
+    },
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...jest.environments.globals.globals,
+      },
+    },
+    rules: {
+      ...jest.configs.recommended.rules,
+    },
+  },
 
   prettierConfig,
 ]);
