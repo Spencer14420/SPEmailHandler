@@ -6,12 +6,12 @@ export declare class ContactForm {
   tokenInputName: string | null;
   successModal: Modal | null;
   messageAlert: HTMLElement | null;
-  onSuccess: ((responseData: Record<string, any>) => void) | null;
+  onSuccess: ((responseData: Record<string, unknown>) => void) | null;
 
   constructor(
     serverScript: string,
     tokenInputName?: string | null,
-    onSuccess?: ((responseData: Record<string, any>) => void) | null,
+    onSuccess?: ((responseData: Record<string, unknown>) => void) | null,
   );
 
   handleSubmit(): void;

@@ -11,7 +11,7 @@ export interface ContactFormData {
 export interface ResponseData {
   status: string;
   message?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export class ContactForm {
