@@ -1,4 +1,5 @@
 import { Modal } from "sp14420-modal";
+import config, { ContactFormMessages } from "./config";
 
 export interface ContactFormData {
   name: string;
@@ -22,16 +23,22 @@ export class ContactForm {
   public sendButton: HTMLElement | null;
   public loadingElement: HTMLElement | null;
   public onSuccess: ((responseData: ResponseData) => void) | null;
+  public messages: ContactFormMessages;
   private isSending: boolean;
 
   constructor(
     serverScript: string,
     tokenInputName: string | null = null,
     onSuccess: ((responseData: ResponseData) => void) | null = null,
+    messages: ContactFormMessages = config.messages,
   ) {
+    if (!serverScript) {
+      throw new Error("serverScript endpoint is required");
+    }
     this.serverScript = serverScript;
     this.tokenInputName = tokenInputName;
     this.onSuccess = onSuccess;
+    this.messages = messages;
 
     this.successModal = new Modal("#success");
 
@@ -127,11 +134,11 @@ export class ContactForm {
 
   private validateInput(email: string, message: string): string | null {
     if (!email || !this.isEmail(email)) {
-      return "Please enter a valid email address";
+      return this.messages.invalidEmail;
     }
 
     if (!message) {
-      return "Please enter a message";
+      return this.messages.emptyMessage;
     }
 
     return null;
@@ -185,8 +192,7 @@ export class ContactForm {
       });
 
       const responseData = await response.json();
-      const errorMessage =
-        responseData.message || "An error occurred. Please try again later.";
+      const errorMessage = responseData.message || this.messages.serverError;
 
       if (!response.ok || responseData.status !== "success") {
         this.displayAlert(errorMessage);
@@ -196,9 +202,7 @@ export class ContactForm {
       this.messageSuccess(responseData);
     } catch (error) {
       console.error("Error sending message", error);
-      this.displayAlert(
-        "An unexpected error occurred. Please try again later.",
-      );
+      this.displayAlert(this.messages.unexpectedError);
     } finally {
       this.setSending(false);
     }

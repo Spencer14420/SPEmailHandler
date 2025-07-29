@@ -1,10 +1,15 @@
 "use strict";
 import { Modal } from "sp14420-modal";
+import config from "./config";
 export class ContactForm {
-  constructor(serverScript, tokenInputName = null, onSuccess = null) {
+  constructor(serverScript, tokenInputName = null, onSuccess = null, messages = config.messages) {
+    if (!serverScript) {
+      throw new Error("serverScript endpoint is required");
+    }
     this.serverScript = serverScript;
     this.tokenInputName = tokenInputName;
     this.onSuccess = onSuccess;
+    this.messages = messages;
     this.successModal = new Modal("#success");
     this.messageAlert = document.querySelector(
       "#message-alert"
@@ -77,10 +82,10 @@ export class ContactForm {
   }
   validateInput(email, message) {
     if (!email || !this.isEmail(email)) {
-      return "Please enter a valid email address";
+      return this.messages.invalidEmail;
     }
     if (!message) {
-      return "Please enter a message";
+      return this.messages.emptyMessage;
     }
     return null;
   }
@@ -124,7 +129,7 @@ export class ContactForm {
         body: formData
       });
       const responseData = await response.json();
-      const errorMessage = responseData.message || "An error occurred. Please try again later.";
+      const errorMessage = responseData.message || this.messages.serverError;
       if (!response.ok || responseData.status !== "success") {
         this.displayAlert(errorMessage);
         return;
@@ -132,9 +137,7 @@ export class ContactForm {
       this.messageSuccess(responseData);
     } catch (error) {
       console.error("Error sending message", error);
-      this.displayAlert(
-        "An unexpected error occurred. Please try again later."
-      );
+      this.displayAlert(this.messages.unexpectedError);
     } finally {
       this.setSending(false);
     }

@@ -6,7 +6,7 @@
   "types": "dist/ContactForm.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx esbuild src/ContactForm.ts --outfile=dist/index.js"
+    "build": "npx esbuild src/ContactForm.ts --outfile=dist/index.js && npx esbuild src/config.ts --outfile=dist/config.js"
   },
   "repository": {
     "type": "git",
