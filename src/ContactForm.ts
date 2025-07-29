@@ -31,8 +31,8 @@ export class ContactForm {
     serverScript: string,
     tokenInputName: string | null = null,
     onSuccess: ((responseData: ResponseData) => void) | null = null,
-    messages: ContactFormMessages = config.messages,
-    selectors: ContactFormSelectors = config.selectors,
+    messages: Partial<ContactFormMessages> = {},
+    selectors: Partial<ContactFormSelectors> = {},
   ) {
     if (!serverScript) {
       throw new Error("serverScript endpoint is required");
@@ -40,8 +40,8 @@ export class ContactForm {
     this.serverScript = serverScript;
     this.tokenInputName = tokenInputName;
     this.onSuccess = onSuccess;
-    this.messages = messages;
-    this.selectors = selectors;
+    this.messages = { ...config.messages, ...messages };
+    this.selectors = { ...config.selectors, ...selectors };
 
     this.successModal = new Modal(this.selectors.successModal);
 

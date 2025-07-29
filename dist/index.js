@@ -2,15 +2,15 @@
 import { Modal } from "sp14420-modal";
 import config from "./config";
 export class ContactForm {
-  constructor(serverScript, tokenInputName = null, onSuccess = null, messages = config.messages, selectors = config.selectors) {
+  constructor(serverScript, tokenInputName = null, onSuccess = null, messages = {}, selectors = {}) {
     if (!serverScript) {
       throw new Error("serverScript endpoint is required");
     }
     this.serverScript = serverScript;
     this.tokenInputName = tokenInputName;
     this.onSuccess = onSuccess;
-    this.messages = messages;
-    this.selectors = selectors;
+    this.messages = { ...config.messages, ...messages };
+    this.selectors = { ...config.selectors, ...selectors };
     this.successModal = new Modal(this.selectors.successModal);
     this.messageAlert = document.querySelector(
       this.selectors.messageAlert
