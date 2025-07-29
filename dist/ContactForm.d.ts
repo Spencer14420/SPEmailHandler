@@ -1,5 +1,4 @@
-import "bootstrap";
-import { Modal } from "bootstrap";
+import { Modal } from "sp14420-modal";
 
 export declare class ContactForm {
   serverScript: string;
