@@ -2,7 +2,7 @@
 import { Modal } from "sp14420-modal";
 import config from "./config";
 export class ContactForm {
-  constructor(serverScript, tokenInputName = null, onSuccess = null, messages = config.messages) {
+  constructor(serverScript, tokenInputName = null, onSuccess = null, messages = config.messages, selectors = config.selectors) {
     if (!serverScript) {
       throw new Error("serverScript endpoint is required");
     }
@@ -10,25 +10,26 @@ export class ContactForm {
     this.tokenInputName = tokenInputName;
     this.onSuccess = onSuccess;
     this.messages = messages;
-    this.successModal = new Modal("#success");
+    this.selectors = selectors;
+    this.successModal = new Modal(this.selectors.successModal);
     this.messageAlert = document.querySelector(
-      "#message-alert"
+      this.selectors.messageAlert
     );
     this.sendButton = document.querySelector(
-      "#sendmessage"
+      this.selectors.sendButton
     );
     this.loadingElement = document.querySelector(
-      "#sendmessage-loading"
+      this.selectors.loadingElement
     );
     this.isSending = false;
     this.initializeEventListeners();
   }
   handleSubmit() {
     const emailElement = document.querySelector(
-      "#email"
+      this.selectors.emailInput
     );
     const messageElement = document.querySelector(
-      "#message"
+      this.selectors.messageInput
     );
     if (!emailElement || !messageElement) {
       console.error("Email or message element not found");
@@ -42,7 +43,7 @@ export class ContactForm {
       return;
     }
     const nameElement = document.querySelector(
-      "#name"
+      this.selectors.nameInput
     );
     const name = nameElement?.value || "";
     const turnstileInput = document.getElementsByName(
@@ -71,7 +72,7 @@ export class ContactForm {
     }
   }
   initializeEventListeners() {
-    document.querySelector("#sendmessage")?.addEventListener("click", () => this.handleSubmit());
+    document.querySelector(this.selectors.sendButton)?.addEventListener("click", () => this.handleSubmit());
   }
   isEmail(email) {
     if (email.length > 254) {
@@ -90,7 +91,11 @@ export class ContactForm {
     return null;
   }
   messageSuccess(responseData) {
-    ["#name", "#email", "#message"].forEach((selector) => {
+    [
+      this.selectors.nameInput,
+      this.selectors.emailInput,
+      this.selectors.messageInput
+    ].forEach((selector) => {
       const element = document.querySelector(
         selector
       );
@@ -99,7 +104,7 @@ export class ContactForm {
       }
     });
     const cancelButton = document.querySelector(
-      "#contactCancel"
+      this.selectors.cancelButton
     );
     cancelButton?.click();
     if (this.successModal) {

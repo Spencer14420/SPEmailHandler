@@ -1,5 +1,5 @@
 import { Modal } from "sp14420-modal";
-import config, { ContactFormMessages } from "./config";
+import config, { ContactFormMessages, ContactFormSelectors } from "./config";
 
 export interface ContactFormData {
   name: string;
@@ -24,6 +24,7 @@ export class ContactForm {
   public loadingElement: HTMLElement | null;
   public onSuccess: ((responseData: ResponseData) => void) | null;
   public messages: ContactFormMessages;
+  public selectors: ContactFormSelectors;
   private isSending: boolean;
 
   constructor(
@@ -31,6 +32,7 @@ export class ContactForm {
     tokenInputName: string | null = null,
     onSuccess: ((responseData: ResponseData) => void) | null = null,
     messages: ContactFormMessages = config.messages,
+    selectors: ContactFormSelectors = config.selectors,
   ) {
     if (!serverScript) {
       throw new Error("serverScript endpoint is required");
@@ -39,19 +41,20 @@ export class ContactForm {
     this.tokenInputName = tokenInputName;
     this.onSuccess = onSuccess;
     this.messages = messages;
+    this.selectors = selectors;
 
-    this.successModal = new Modal("#success");
+    this.successModal = new Modal(this.selectors.successModal);
 
     this.messageAlert = document.querySelector(
-      "#message-alert",
+      this.selectors.messageAlert,
     ) as HTMLElement | null;
 
     this.sendButton = document.querySelector(
-      "#sendmessage",
+      this.selectors.sendButton,
     ) as HTMLElement | null;
 
     this.loadingElement = document.querySelector(
-      "#sendmessage-loading",
+      this.selectors.loadingElement,
     ) as HTMLElement | null;
 
     this.isSending = false;
@@ -61,10 +64,10 @@ export class ContactForm {
 
   public handleSubmit(): void {
     const emailElement = document.querySelector(
-      "#email",
+      this.selectors.emailInput,
     ) as HTMLInputElement | null;
     const messageElement = document.querySelector(
-      "#message",
+      this.selectors.messageInput,
     ) as HTMLInputElement | null;
 
     if (!emailElement || !messageElement) {
@@ -82,7 +85,7 @@ export class ContactForm {
     }
 
     const nameElement = document.querySelector(
-      "#name",
+      this.selectors.nameInput,
     ) as HTMLInputElement | null;
     const name = nameElement?.value || "";
 
@@ -120,7 +123,7 @@ export class ContactForm {
 
   private initializeEventListeners(): void {
     document
-      .querySelector("#sendmessage")
+      .querySelector(this.selectors.sendButton)
       ?.addEventListener("click", () => this.handleSubmit());
   }
 
@@ -145,7 +148,11 @@ export class ContactForm {
   }
 
   private messageSuccess(responseData?: ResponseData): void {
-    ["#name", "#email", "#message"].forEach((selector) => {
+    [
+      this.selectors.nameInput,
+      this.selectors.emailInput,
+      this.selectors.messageInput,
+    ].forEach((selector) => {
       const element = document.querySelector(
         selector,
       ) as HTMLInputElement | null;
@@ -155,7 +162,7 @@ export class ContactForm {
     });
 
     const cancelButton = document.querySelector(
-      "#contactCancel",
+      this.selectors.cancelButton,
     ) as HTMLButtonElement | null;
     cancelButton?.click();
 
