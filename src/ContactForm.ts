@@ -35,7 +35,7 @@ export class ContactForm {
     selectors: Partial<ContactFormSelectors> = {},
   ) {
     if (!serverScript) {
-      throw new Error("serverScript endpoint is required");
+      throw new Error("serverScript endpoint is requir ed");
     }
     this.serverScript = serverScript;
     this.tokenInputName = tokenInputName;
