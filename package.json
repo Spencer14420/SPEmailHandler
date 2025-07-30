@@ -1,12 +1,12 @@
 {
   "name": "spemailhandler",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "A script to handle the interaction between a Bootstrap-based contact form and the server, handling form submission and feedback.",
   "main": "dist/index.js",
   "types": "dist/ContactForm.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx esbuild src/ContactForm.ts --outfile=dist/index.js"
+    "test": "jest",
+    "build": "npx esbuild src/ContactForm.ts --outfile=dist/index.js && npx esbuild src/config.ts --outfile=dist/config.js"
   },
   "repository": {
     "type": "git",
@@ -24,14 +24,19 @@
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@types/bootstrap": "^5.2.10",
+    "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
     "esbuild": "^0.25.0",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jest": "^29.0.1",
     "eslint-plugin-prettier": "^5.5.3",
     "globals": "^16.3.0",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5",
     "prettier": "^3.6.2",
+    "ts-jest": "^29.4.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0"
   },

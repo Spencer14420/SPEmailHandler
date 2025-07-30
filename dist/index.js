@@ -1,29 +1,35 @@
 "use strict";
 import { Modal } from "sp14420-modal";
+import config from "./config";
 export class ContactForm {
-  constructor(serverScript, tokenInputName = null, onSuccess = null) {
+  constructor(serverScript, tokenInputName = null, onSuccess = null, messages = {}, selectors = {}) {
+    if (!serverScript) {
+      throw new Error("serverScript endpoint is required");
+    }
     this.serverScript = serverScript;
     this.tokenInputName = tokenInputName;
     this.onSuccess = onSuccess;
-    this.successModal = new Modal("#success");
+    this.messages = { ...config.messages, ...messages };
+    this.selectors = { ...config.selectors, ...selectors };
+    this.successModal = new Modal(this.selectors.successModal);
     this.messageAlert = document.querySelector(
-      "#message-alert"
+      this.selectors.messageAlert
     );
     this.sendButton = document.querySelector(
-      "#sendmessage"
+      this.selectors.sendButton
     );
     this.loadingElement = document.querySelector(
-      "#sendmessage-loading"
+      this.selectors.loadingElement
     );
     this.isSending = false;
     this.initializeEventListeners();
   }
   handleSubmit() {
     const emailElement = document.querySelector(
-      "#email"
+      this.selectors.emailInput
     );
     const messageElement = document.querySelector(
-      "#message"
+      this.selectors.messageInput
     );
     if (!emailElement || !messageElement) {
       console.error("Email or message element not found");
@@ -37,7 +43,7 @@ export class ContactForm {
       return;
     }
     const nameElement = document.querySelector(
-      "#name"
+      this.selectors.nameInput
     );
     const name = nameElement?.value || "";
     const turnstileInput = document.getElementsByName(
@@ -66,7 +72,7 @@ export class ContactForm {
     }
   }
   initializeEventListeners() {
-    document.querySelector("#sendmessage")?.addEventListener("click", () => this.handleSubmit());
+    document.querySelector(this.selectors.sendButton)?.addEventListener("click", () => this.handleSubmit());
   }
   isEmail(email) {
     if (email.length > 254) {
@@ -77,15 +83,19 @@ export class ContactForm {
   }
   validateInput(email, message) {
     if (!email || !this.isEmail(email)) {
-      return "Please enter a valid email address";
+      return this.messages.invalidEmail;
     }
     if (!message) {
-      return "Please enter a message";
+      return this.messages.emptyMessage;
     }
     return null;
   }
   messageSuccess(responseData) {
-    ["#name", "#email", "#message"].forEach((selector) => {
+    [
+      this.selectors.nameInput,
+      this.selectors.emailInput,
+      this.selectors.messageInput
+    ].forEach((selector) => {
       const element = document.querySelector(
         selector
       );
@@ -94,7 +104,7 @@ export class ContactForm {
       }
     });
     const cancelButton = document.querySelector(
-      "#contactCancel"
+      this.selectors.cancelButton
     );
     cancelButton?.click();
     if (this.successModal) {
@@ -124,7 +134,7 @@ export class ContactForm {
         body: formData
       });
       const responseData = await response.json();
-      const errorMessage = responseData.message || "An error occurred. Please try again later.";
+      const errorMessage = responseData.message || this.messages.serverError;
       if (!response.ok || responseData.status !== "success") {
         this.displayAlert(errorMessage);
         return;
@@ -132,9 +142,7 @@ export class ContactForm {
       this.messageSuccess(responseData);
     } catch (error) {
       console.error("Error sending message", error);
-      this.displayAlert(
-        "An unexpected error occurred. Please try again later."
-      );
+      this.displayAlert(this.messages.unexpectedError);
     } finally {
       this.setSending(false);
     }

@@ -1,17 +1,37 @@
-import "bootstrap";
-import { Modal } from "bootstrap";
+import { Modal } from "sp14420-modal";
+import { ContactFormMessages, ContactFormSelectors } from "./config";
+
+export interface ContactFormData {
+  name: string;
+  email: string;
+  message: string;
+  turnstileToken: string;
+  tokenInputToken: string;
+}
+export interface ResponseData {
+  status: string;
+  message?: string;
+  [key: string]: unknown;
+}
 
 export declare class ContactForm {
   serverScript: string;
   tokenInputName: string | null;
   successModal: Modal | null;
   messageAlert: HTMLElement | null;
-  onSuccess: ((responseData: Record<string, unknown>) => void) | null;
+  sendButton: HTMLElement | null;
+  loadingElement: HTMLElement | null;
+  onSuccess: ((responseData: ResponseData) => void) | null;
+  messages: ContactFormMessages;
+  selectors: ContactFormSelectors;
+  private isSending: boolean;
 
   constructor(
     serverScript: string,
     tokenInputName?: string | null,
-    onSuccess?: ((responseData: Record<string, unknown>) => void) | null,
+    onSuccess?: ((responseData: ResponseData) => void) | null,
+    messages?: Partial<ContactFormMessages>,
+    selectors?: Partial<ContactFormSelectors>,
   );
 
   handleSubmit(): void;

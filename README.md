@@ -18,6 +18,11 @@ import { ContactForm } from "spemailhandler";
 const formHandler = new ContactForm("/path/to/your-server-script.php");
 ```
 
+## Configuration
+
+`ContactForm` reads default validation and error messages as well as HTML element selectors from `config.ts`. You must provide the submission `endpoint`
+when creating an instance. Messages and selectors can be overridden by passing objects to the constructor.
+
 ## HTML Structure
 
 The following HTML structure is required for SPEmailHandler to function correctly. Be sure to use the correct id and class attributes as the script depends on these identifiers.
@@ -80,7 +85,8 @@ Success Modal
 
 ### Initialize the Contact Form
 
-After including the necessary HTML elements, initialize ContactForm by passing the URL of your server-side script that handles form submissions.
+After including the necessary HTML elements, initialize `ContactForm` with the URL of your server-side script. This endpoint is required.
+You can optionally provide custom messages when creating the instance.
 
 ```javascript
 const formHandler = new ContactForm("/path/to/your-server-script.php");
@@ -90,6 +96,8 @@ Optionally, include:
 
 - **CSRF Token Input Name:** If your server requires a CSRF token, specify the name attribute of the token input field.
 - **onSuccess Callback:** A function to handle successful submissions (e.g., updating the UI or logging data).
+- **Custom Messages:** Provide an object of message strings to override the defaults.
+- **Custom Selectors:** Pass an object with CSS selectors if your HTML uses different IDs.
 
 ```javascript
 const formHandler = new ContactForm(
@@ -98,6 +106,22 @@ const formHandler = new ContactForm(
   (responseData) => {
     console.log("Form submitted successfully:", responseData);
   }, // Optional callback function
+  {
+    invalidEmail: "Email looks wrong",
+    emptyMessage: "Message required",
+    serverError: "Server error, try again",
+    unexpectedError: "Something went wrong",
+  },
+  {
+    successModal: "#successModal",
+    messageAlert: "#alert",
+    sendButton: "#submitBtn",
+    loadingElement: "#submitLoading",
+    nameInput: "#fullName",
+    emailInput: "#userEmail",
+    messageInput: "#userMessage",
+    cancelButton: "#closeModal",
+  },
 );
 ```
 

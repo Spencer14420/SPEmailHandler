@@ -1,4 +1,5 @@
 import { Modal } from "sp14420-modal";
+import config, { ContactFormMessages, ContactFormSelectors } from "./config";
 
 export interface ContactFormData {
   name: string;
@@ -22,29 +23,38 @@ export class ContactForm {
   public sendButton: HTMLElement | null;
   public loadingElement: HTMLElement | null;
   public onSuccess: ((responseData: ResponseData) => void) | null;
+  public messages: ContactFormMessages;
+  public selectors: ContactFormSelectors;
   private isSending: boolean;
 
   constructor(
     serverScript: string,
     tokenInputName: string | null = null,
     onSuccess: ((responseData: ResponseData) => void) | null = null,
+    messages: Partial<ContactFormMessages> = {},
+    selectors: Partial<ContactFormSelectors> = {},
   ) {
+    if (!serverScript) {
+      throw new Error("serverScript endpoint is required");
+    }
     this.serverScript = serverScript;
     this.tokenInputName = tokenInputName;
     this.onSuccess = onSuccess;
+    this.messages = { ...config.messages, ...messages };
+    this.selectors = { ...config.selectors, ...selectors };
 
-    this.successModal = new Modal("#success");
+    this.successModal = new Modal(this.selectors.successModal);
 
     this.messageAlert = document.querySelector(
-      "#message-alert",
+      this.selectors.messageAlert,
     ) as HTMLElement | null;
 
     this.sendButton = document.querySelector(
-      "#sendmessage",
+      this.selectors.sendButton,
     ) as HTMLElement | null;
 
     this.loadingElement = document.querySelector(
-      "#sendmessage-loading",
+      this.selectors.loadingElement,
     ) as HTMLElement | null;
 
     this.isSending = false;
@@ -54,10 +64,10 @@ export class ContactForm {
 
   public handleSubmit(): void {
     const emailElement = document.querySelector(
-      "#email",
+      this.selectors.emailInput,
     ) as HTMLInputElement | null;
     const messageElement = document.querySelector(
-      "#message",
+      this.selectors.messageInput,
     ) as HTMLInputElement | null;
 
     if (!emailElement || !messageElement) {
@@ -75,7 +85,7 @@ export class ContactForm {
     }
 
     const nameElement = document.querySelector(
-      "#name",
+      this.selectors.nameInput,
     ) as HTMLInputElement | null;
     const name = nameElement?.value || "";
 
@@ -113,7 +123,7 @@ export class ContactForm {
 
   private initializeEventListeners(): void {
     document
-      .querySelector("#sendmessage")
+      .querySelector(this.selectors.sendButton)
       ?.addEventListener("click", () => this.handleSubmit());
   }
 
@@ -127,18 +137,22 @@ export class ContactForm {
 
   private validateInput(email: string, message: string): string | null {
     if (!email || !this.isEmail(email)) {
-      return "Please enter a valid email address";
+      return this.messages.invalidEmail;
     }
 
     if (!message) {
-      return "Please enter a message";
+      return this.messages.emptyMessage;
     }
 
     return null;
   }
 
   private messageSuccess(responseData?: ResponseData): void {
-    ["#name", "#email", "#message"].forEach((selector) => {
+    [
+      this.selectors.nameInput,
+      this.selectors.emailInput,
+      this.selectors.messageInput,
+    ].forEach((selector) => {
       const element = document.querySelector(
         selector,
       ) as HTMLInputElement | null;
@@ -148,7 +162,7 @@ export class ContactForm {
     });
 
     const cancelButton = document.querySelector(
-      "#contactCancel",
+      this.selectors.cancelButton,
     ) as HTMLButtonElement | null;
     cancelButton?.click();
 
@@ -185,8 +199,7 @@ export class ContactForm {
       });
 
       const responseData = await response.json();
-      const errorMessage =
-        responseData.message || "An error occurred. Please try again later.";
+      const errorMessage = responseData.message || this.messages.serverError;
 
       if (!response.ok || responseData.status !== "success") {
         this.displayAlert(errorMessage);
@@ -196,9 +209,7 @@ export class ContactForm {
       this.messageSuccess(responseData);
     } catch (error) {
       console.error("Error sending message", error);
-      this.displayAlert(
-        "An unexpected error occurred. Please try again later.",
-      );
+      this.displayAlert(this.messages.unexpectedError);
     } finally {
       this.setSending(false);
     }
