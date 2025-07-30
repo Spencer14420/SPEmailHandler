@@ -19,4 +19,5 @@ export interface ContactFormConfig {
   messages: ContactFormMessages;
   selectors: ContactFormSelectors;
 }
-declare const config: ContactForm;
+declare const config: ContactFormConfig;
+export default config;
