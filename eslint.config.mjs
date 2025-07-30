@@ -37,6 +37,7 @@ export default defineConfig([
     },
     rules: {
       ...jest.configs.recommended.rules,
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
 
