@@ -30,8 +30,8 @@ export declare class ContactForm {
     serverScript: string,
     tokenInputName?: string | null,
     onSuccess?: ((responseData: ResponseData) => void) | null,
-    messages?: ContactFormMessages,
-    selectors?: ContactFormSelectors,
+    messages?: Partial<ContactFormMessages>,
+    selectors?: Partial<ContactFormSelectors>,
   );
 
   handleSubmit(): void;
